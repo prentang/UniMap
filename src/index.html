@@ -1,22 +1,113 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Campus Map with Directions</title>
     <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css" />
+    <!-- Leaflet Routing Machine CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.css" />
     <style>
-        #map { height: 100vh; width: 100%; }
-        body { margin: 0; }
+        #map { 
+            height: 90vh; 
+            margin: 0; 
+        }
+        #controls {
+            margin: 10px;
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
     </style>
 </head>
 <body>
+    <div id="controls">
+        <button id="set-start" class="btn">Set Start Point</button>
+        <button id="set-end" class="btn">Set End Point</button>
+        <select id="travel-mode">
+            <option value="foot">Walking</option>
+            <option value="driving">Driving</option>
+        </select>
+    </div>
     <div id="map"></div>
+    
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
-    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
-    <script src="script.js"></script>
+    <!-- Leaflet Routing Machine JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-routing-machine/3.2.12/leaflet-routing-machine.min.js"></script>
+    <script>
+        // Initialize the map
+        const map = L.map('map').setView([42.3134, -71.0389], 16);
+
+        // Add tile layer
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Routing Control
+        let startPoint = null;
+        let endPoint = null;
+        let travelMode = 'foot'; // Default travel mode
+
+        const routingControl = L.Routing.control({
+            waypoints: [],
+            routeWhileDragging: true,
+            router: L.Routing.osrmv1({
+                profile: travelMode // Travel mode: walking or driving
+            }),
+            lineOptions: {
+                styles: [{ color: 'blue', weight: 4 }]
+            }
+        }).addTo(map);
+
+        // Load GeoJSON file for permanent points
+        fetch('./campus-points.geojson')
+            .then(response => response.json())
+            .then(data => {
+                // Add GeoJSON points to the map
+                L.geoJSON(data, {
+                    pointToLayer: function(feature, latlng) {
+                        // Render points as markers
+                        return L.marker(latlng);
+                    },
+                    onEachFeature: function(feature, layer) {
+                        // Bind a popup to each marker
+                        layer.bindPopup(`<b>${feature.properties.name}</b>`);
+
+                        // Add click event to use markers as start or end points
+                        layer.on('click', () => {
+                            if (!startPoint) {
+                                startPoint = layer.getLatLng();
+                                alert(`Start Point set to: ${feature.properties.name}`);
+                            } else if (!endPoint) {
+                                endPoint = layer.getLatLng();
+                                alert(`End Point set to: ${feature.properties.name}`);
+                                updateRoute();
+                            } else {
+                                alert('Both Start and End Points are already set.');
+                            }
+                        });
+                    }
+                }).addTo(map);
+            })
+            .catch(err => console.error('Error loading GeoJSON:', err));
+
+        // Update the route whenever waypoints or travel mode changes
+        function updateRoute() {
+            if (startPoint && endPoint) {
+                routingControl.setWaypoints([startPoint, endPoint]);
+                routingControl.getRouter().options.profile = travelMode;
+                routingControl.route();
+            }
+        }
+
+        // Handle travel mode changes
+        document.getElementById('travel-mode').addEventListener('change', (e) => {
+            travelMode = e.target.value;
+            updateRoute();
+        });
+    </script>
 </body>
 </html>

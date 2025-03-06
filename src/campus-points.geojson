@@ -1,0 +1,45 @@
+{
+    "type": "FeatureCollection",
+    "features": [
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.03970840578555, 42.31354477756285] },
+            "properties": { "name": "Healey Library" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.03921435463808, 42.3128781836268] },
+            "properties": { "name": "McCormack Hall" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.038194, 42.312228] },
+            "properties": { "name": "Wheatley Hall" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.03981216222031, 42.31430190494495] },
+            "properties": { "name": "Quinn Administration Building" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.04066675720297, 42.313886841456515] },
+            "properties": { "name": "ISC" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.03766751374259, 42.31437230781923] },
+            "properties": { "name": "Quad Lot" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.03697717590993, 42.31288951969357] },
+            "properties": { "name": "Campus Center" }
+        },
+        {
+            "type": "Feature",
+            "geometry": { "type": "Point", "coordinates": [-71.03981875836607, 42.31510667543252] },
+            "properties": { "name": "Clark" }
+        }
+    ]
+}
